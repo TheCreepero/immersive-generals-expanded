@@ -1,0 +1,16 @@
+# Immersive Generals Expanded - Dynamic Character Recruitment On Actions
+#
+# Using on_startup dynamically recruits new generals into their respective nations
+# without editing or overriding vanilla history/countries/TAG.txt files.
+# This guarantees 100% compatibility with vanilla, historical overhauls, and Road to 56.
+
+on_actions = {
+	on_startup = {
+		effect = {
+			# Example dynamic recruitment:
+			# FIN = {
+			# 	recruit_character = FIN_example_general
+			# }
+		}
+	}
+}

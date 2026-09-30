@@ -1,0 +1,17 @@
+# Immersive Generals Expanded - Portrait Sprite Definitions
+#
+# Sprite definitions link GFX identifiers to texture files located in gfx/leaders/<TAG>/
+# Large army portrait dimensions: 156x210
+# Small army portrait dimensions: 65x67
+
+spriteTypes = {
+	# Example Portrait Definition
+	# spriteType = {
+	# 	name = "GFX_portrait_TAG_example_corps_commander"
+	# 	texturefile = "gfx/leaders/TAG/portrait_TAG_example_corps_commander.dds"
+	# }
+	# spriteType = {
+	# 	name = "GFX_portrait_TAG_example_corps_commander_small"
+	# 	texturefile = "gfx/leaders/TAG/portrait_TAG_example_corps_commander_small.dds"
+	# }
+}

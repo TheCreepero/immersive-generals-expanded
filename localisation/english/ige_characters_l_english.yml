@@ -1,0 +1,8 @@
+﻿l_english:
+ # Immersive Generals Expanded - Localisation Keys
+ # Character names can be specified directly as strings in common/characters/
+ # or as localisation keys defined here for multi-language support.
+ #
+ # Example:
+ # TAG_example_corps_commander:0 "General Name"
+ # TAG_example_corps_commander_desc:0 "Historical biographical summary and service record."

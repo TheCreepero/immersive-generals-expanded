@@ -1,0 +1,3 @@
+- **[Immersive Generals Expanded](Home.md)**
+- **Developer Guide**
+  - [Contributing](Contributing.md)

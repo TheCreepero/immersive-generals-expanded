@@ -1,0 +1,49 @@
+# Immersive Generals Expanded - Character Definitions Template
+# Standard HOI4 Character format (v1.11+ No Step Back / Avalanche / Stella Polaris)
+#
+# Each character block must have a unique identifier: TAG_first_last
+# Traits reference unit leader traits defined in common/unit_leader_traits/
+# Large portraits standard resolution: 156x210 pixels (.dds, DXT5/BC3)
+# Small portraits standard resolution: 65x67 pixels (.dds, DXT5/BC3)
+
+characters = {
+	# Example Corps Commander:
+	# TAG_example_corps_commander = {
+	# 	name = "Example Corps Commander"
+	# 	portraits = {
+	# 		army = {
+	# 			large = "GFX_portrait_TAG_example_corps_commander"
+	# 			small = "GFX_portrait_TAG_example_corps_commander_small"
+	# 		}
+	# 	}
+	# 	corps_commander = {
+	# 		traits = { infantry_officer trait_reckless }
+	# 		skill = 2
+	# 		attack_skill = 2
+	# 		defense_skill = 2
+	# 		planning_skill = 1
+	# 		logistics_skill = 1
+	# 		legacy_id = -1
+	# 	}
+	# }
+
+	# Example Field Marshal:
+	# TAG_example_field_marshal = {
+	# 	name = "Example Field Marshal"
+	# 	portraits = {
+	# 		army = {
+	# 			large = "GFX_portrait_TAG_example_field_marshal"
+	# 			small = "GFX_portrait_TAG_example_field_marshal_small"
+	# 		}
+	# 	}
+	# 	field_marshal = {
+	# 		traits = { offensive_doctrine logistics_wizard }
+	# 		skill = 4
+	# 		attack_skill = 4
+	# 		defense_skill = 3
+	# 		planning_skill = 4
+	# 		logistics_skill = 3
+	# 		legacy_id = -1
+	# 	}
+	# }
+}
