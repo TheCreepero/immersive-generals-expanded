@@ -1,40 +1,29 @@
-# Immersive Generals Expanded - Development & Agent Rules
+# Immersive Generals Expanded - Agent Rules
 
-## 1. Mod Architecture & Workspace Layout
-- This project follows a unified single-root mod layout:
-  - **Workspace & Git root**: `C:\dev\immersive-generals-expanded` (Git repository root containing `.git/`)
-  - All mod descriptors (`descriptor.mod`), build tools (`build.ps1`), content (`common/`), tests (`tests/`), and agent configurations (`GEMINI.md`) reside at the project root.
-  - Release archives (`artifacts/`) and scratch scripts (`scratch/`) are git-ignored.
+Shared rules for every mod in this tree (file encodings, build commands, engine knowledge, git) are in the Modding Manager's `../../GEMINI.md`; Claude Code loads it by itself, Antigravity reads it first.
 
-## 2. Clausewitz File Format & Syntax Invariants
-- **UTF-8 Without BOM**: All Clausewitz script files (`.mod`, `.txt`, `.gui`, `.gfx`) must be saved in UTF-8 without BOM. Never use standard Windows PowerShell `Set-Content -Encoding UTF8` because it writes a BOM (`\ufeff`). Always write text files using:
-  `[System.IO.File]::WriteAllText($path, $content, [System.Text.UTF8Encoding]::new($false))`
-- **Key-Value Syntax**: `descriptor.mod` must strictly follow `key="value"` without spaces around the `=` operator.
-- **Bracket Balance**: Curly braces `{}` and double quotes `""` must always be strictly balanced.
-- **No Empty Blocks**: Avoid empty blocks such as `unique = { }` or `ordered = { }`.
+## What this mod is
+- Adds historical corps commanders and field marshals as characters, recruited at game start without touching vanilla country history files; not yet on the Workshop. `docs/GENERALS_AUTHORING_GUIDE.md` is the authoring guide, `docs/ROSTER_PLANNING.md` the roster plan.
 
-## 3. Build & Automation Protocol
-- Always run pre-flight syntax and descriptor checks before declaring work complete:
-  `powershell -File .\build.ps1 -ValidateOnly`
-- Run the full automated Pester test suite:
-  `powershell -File .\build.ps1 -Test`
-- Use `.\build.ps1 -DevLink` for zero-copy live editing directly from the repository.
-- Use `.\build.ps1 -Package` to verify that release packaging strictly excludes `.git`, `.github`, `.vscode`, `tests`, `wiki`, and developer scripts.
+## Mod invariants
+- Characters are authored in `common/characters/ige_<TAG>_characters.txt` under a root `characters = { ... }` block [CHR-001].
+- Never overwrite `history/countries/<TAG>.txt`: the mod's copy would replace the whole file [LOAD-010]. Recruit from `common/on_actions/ige_on_actions.txt` with `on_startup` and `recruit_character` (guide section 5). The technique has not yet been seen working with a real character [CHR-003]: check the first general in a new game before authoring more.
+- Portraits: large `156x210` uncompressed `.dds` under `gfx/leaders/<TAG>/` [CHR-004], small `65x67` [CHR-005], each with a `spriteType` in `interface/ige_portraits.gfx` (guide section 6).
+- `skill` 1 to 5 and the four sub-skills within vanilla's start range of 1 to 6 [CHR-006]; `legacy_id = -1` is this mod's convention [CHR-007]; look every trait id up with `hoi4-vanilla-lookup`, never from memory.
+- Localisation exists for every language of the game and starts with `l_<language>:` [LOC-001].
+- A changed `.gfx` file or texture is seen only after a restart [AUTO-005] [AUTO-006]; whether `reload characters` works is untried [CHR-008].
 
-## 4. Git & Commit Guidelines
-- Do not commit to the Git repository unless explicitly instructed by the user. The user prefers to review changes before committing.
-- **Git Verification Invariant**: After completing changes, always verify `git status` to ensure the working tree reflects expected changes.
+## Commands beyond build.ps1
+- None.
 
-## 5. Hearts of Iron IV Character & General Invariants
-- **Clausewitz Character System (v1.11+)**: All unit leaders (corps commanders and field marshals) are authored in `common/characters/ige_<TAG>_characters.txt` under the root `characters = { ... }` block.
-- **Zero-Conflict Recruitment Strategy**: Never overwrite vanilla `history/countries/TAG.txt` files to recruit generals. Always recruit custom generals dynamically using `common/on_actions/ige_on_actions.txt` with `on_startup = { effect = { TAG = { recruit_character = <TAG_name> } } }` to ensure 100% compatibility with vanilla, historical overhauls, and Road to 56.
-- **Portrait Technical Standards**:
-  - Army Leader Portraits (large): `156x210` pixels, `.dds` format (BC3/DXT5 or uncompressed 8.8.8.8 ARGB) in `gfx/leaders/<TAG>/`.
-  - Division / Advisor Portraits (small): `65x67` pixels, `.dds` format (BC3/DXT5).
-  - All portraits must have corresponding `spriteType` definitions declared in `interface/ige_portraits.gfx`.
-- **Localisation Encoding**: While Clausewitz `.txt` and `.gfx` files must be UTF-8 without BOM, HOI4 YAML localisation files (`localisation/english/*.yml`) **MUST** be encoded in UTF-8 with BOM (`0xEF, 0xBB, 0xBF`) and begin with `l_english:`.
-- **Character Skills & Traits**:
-  - `skill`: Integer 1 to 5.
-  - `attack_skill`, `defense_skill`, `planning_skill`, `logistics_skill`: Integer 1 to 10.
-  - Always assign `legacy_id = -1`.
-- **In-Game Debug Console**: Test in-game with `-debug`. Use `reload characters`, `reload interface`, and `reload textures` to instantly hot-reload without restarting the game.
+## Read when
+| Task | Read |
+|---|---|
+| Authoring a character | `docs/GENERALS_AUTHORING_GUIDE.md` sections 2 to 4 (block anatomy, stats, traits) |
+| Recruitment or portraits | guide sections 5 and 6 |
+| Choosing the next nation | `docs/ROSTER_PLANNING.md` |
+
+## Engine Knowledge
+- Engine facts live in the Modding Manager's register, reached through the user-level `hoi4-modding-knowledge` skill: search it before a new kind of file and before asking for a game launch, cite ids here, never write a fact into this repository.
+- Topics this mod leans on: `characters`, `localisation`, `encoding-and-syntax`, `loading-and-overrides`.
+- `tests/Knowledge.Tests.ps1` runs the register's audit for this repository; it is a copy the Manager keeps current.

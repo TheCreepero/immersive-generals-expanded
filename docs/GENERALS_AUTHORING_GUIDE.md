@@ -34,7 +34,7 @@ immersive-generals-expanded/
 
 ## 2. Anatomy of a Character Block
 
-In Hearts of Iron IV 1.11+ (No Step Back and later), generals are unified under the Clausewitz character system in `common/characters/<filename>.txt`.
+In Hearts of Iron IV 1.11+ (No Step Back and later), generals are unified under the Clausewitz character system in `common/characters/<filename>.txt` [CHR-001].
 
 ### Corps Commander (Army General) Template:
 
@@ -93,9 +93,9 @@ characters = {
 - **`portraits.army.large`**: Sprite name defined in `interface/*.gfx`. Rendered in division assignment, army view, and officer selection.
 - **`portraits.army.small`**: Sprite name for division commander strip, advisor icons, and combat bubble.
 - **`corps_commander` / `field_marshal`**: Defines unit leader role. A character can possess both if they can serve as either general or field marshal.
-- **`skill`**: Starting leader level (1 to 5).
-- **`attack_skill`, `defense_skill`, `planning_skill`, `logistics_skill`**: Base individual combat statistics (1 to 10).
-- **`legacy_id = -1`**: Required for compatibility with older save formats and engine slot indexing.
+- **`skill`**: Starting leader level. Vanilla uses 1 to 5 [CHR-006].
+- **`attack_skill`, `defense_skill`, `planning_skill`, `logistics_skill`**: Base individual combat statistics. Vanilla start values run from 0 to 6 and are most often 2; stay within 1 to 6 [CHR-006].
+- **`legacy_id = -1`**: A convention of this mod. Vanilla writes -1 in about two thirds of its role blocks and a number in the rest [CHR-007].
 
 ---
 
@@ -121,48 +121,19 @@ To maintain historical authenticity and game balance, follow this skill tier fra
 
 ## 4. Traits Reference Catalog
 
-### Personality Traits (Assigned at start, non-learnable):
-- `trait_reckless`: +Attack, higher injury chance.
-- `trait_cautious`: +Defense, lower injury chance, slower planning.
-- `media_personality`: Political power generation or prestige.
-- `harsh_leader`: Low division recovery rate, higher combat bonuses.
-- `old_guard`: Reduced XP gain, traditionalist mindset.
+Trait ids and what they do are read from the game, not from a list kept here. A list goes stale with every patch, and the one that stood here named `mountaineer`, which is not a trait id (the vanilla id is `trait_mountaineer`).
 
-### Background / Branch Traits:
-- `infantry_officer`: Boosts infantry division coordination and XP.
-- `cavalry_officer`: Boosts cavalry and motorized/mechanized units.
-- `armor_officer`: Boosts armor division breakthrough and attack.
-
-### Terrain Specialists:
-- `mountaineer`: Hills and Mountain combat bonus.
-- `hill_fighter`: Hill attack/defense bonus.
-- `swamp_fox`: Marsh and swamp combat bonus.
-- `desert_fox`: Desert attrition reduction and speed.
-- `urban_assault_specialist`: City assault and defense.
-- `jungle_rat`: Jungle attrition and movement bonus.
-- `ranger`: Forest movement and combat bonus.
-
-### Combat Specializations:
-- `trickster`: Reconnaissance bonus and surprise attack chance.
-- `winter_specialist`: Reduces winter and deep snow attrition.
-- `fortress_buster`: Attack bonus against forts and fortifications.
-- `commando`: Special forces (paratroopers, marines, mountaineers) bonus.
-
-### Field Marshal Doctrines:
-- `offensive_doctrine`: Increases organization and speed for all assigned armies.
-- `defensive_doctrine`: Increases maximum entrenchment for all assigned armies.
-- `fast_planner`: Accelerates planning speed across all armies.
-- `thorough_planner`: Increases maximum planning cap.
-- `logistics_wizard`: Enables extra supply distribution and decreases supply consumption.
-- `inspirational_leader`: Increases division recovery rate.
-- `unyielding_defender`: Increases combat defense in territory.
+- Every unit leader trait: `common/unit_leader/*.txt` in the game folder.
+- One trait, with its modifiers: `Find-HoiDefinition.ps1 <trait id> -Type trait` (skill `hoi4-vanilla-lookup`).
+- The traits of a comparable vanilla general: `Get-HoiCharacter.ps1 <character id> -ResolveTraits`.
+- The name and description the player sees: `Find-HoiLocalisation.ps1 -Key <trait id>`.
 
 ---
 
 ## 5. Zero-Conflict Recruitment Architecture
 
 ### The Problem With `history/countries/TAG.txt`:
-Overriding `history/countries/TAG.txt` in a mod replaces vanilla starting tech, ideas, politics, oob, and ministers. This creates severe incompatibility with:
+Overriding `history/countries/TAG.txt` in a mod replaces vanilla starting tech, ideas, politics, oob, and ministers [LOAD-010]. This creates severe incompatibility with:
 - Major total overhaul mods (Road to 56, Kaiserreich, Millenium Dawn)
 - Flavor mods touching history
 - Official Paradox game updates and DLCs
@@ -185,15 +156,15 @@ on_actions = {
 }
 ```
 
-This executes dynamically on campaign start, recruiting generals into the correct nation's military officer pool without touching a single vanilla history file!
+This runs when a new game starts and recruits the generals without touching a vanilla history file. It rests on what another project saw of `on_startup` [SCR-007] [SCR-008]; with a real character it has not yet been seen working in the game [CHR-003], so check the first general in a new game before authoring more.
 
 ---
 
 ## 6. Portrait Graphic Specifications
 
 ### File Dimensions & Formats:
-- **Large Portrait**: `156 x 210` pixels, saved in DirectDraw Surface (`.dds`) format using **BC3 / DXT5** (interpolated alpha) or **8.8.8.8 ARGB** uncompressed.
-- **Small Portrait**: `65 x 67` pixels, `.dds` format using **BC3 / DXT5**.
+- **Large Portrait**: `156 x 210` pixels, DirectDraw Surface (`.dds`). Vanilla portraits are uncompressed, 32 or 16 bit [CHR-004].
+- **Small Portrait**: `65 x 67` pixels, `.dds` [CHR-005].
 
 ### Folder Convention:
 Store textures under `gfx/leaders/<TAG>/`:
@@ -223,7 +194,7 @@ spriteTypes = {
 
 Character names and biographies reside in `localisation/english/ige_characters_l_english.yml`.
 
-- **Encoding**: Must be **UTF-8 with BOM** (`0xEF, 0xBB, 0xBF`).
+- **Encoding**: Must be **UTF-8 with BOM** (`0xEF, 0xBB, 0xBF`), with a file for every language of the game [LOC-001].
 - **Header**: First line must be `l_english:`.
 - **Indentation**: One space before key.
 - **Version suffix**: `:0` followed by space and double-quoted string.
@@ -240,17 +211,15 @@ l_english:
 
 Launch Hearts of Iron IV with the `-debug` launch parameter.
 
-Open the in-game console using the tilde key (`~`):
-- `reload characters`: Instantly reloads all character definitions in `common/characters/`.
-- `reload interface`: Reloads `.gfx` sprite mappings and GUI layouts without restarting.
-- `reload textures`: Reloads modified `.dds` textures.
-- `reload on_actions`: Reloads on-action scripts.
+- A changed `.gfx` file or texture is seen only after a restart: `reload interface` and `reload textures` answer and change nothing [AUTO-005] [AUTO-006].
+- `reload characters` and `reload on_actions` have not been tried by any project [CHR-008]. Restart to be sure.
+- `on_startup` runs when a new game starts, so start a new game to see a recruitment [CHR-003].
 
 ---
 
 ## 9. Build & Automated Testing Commands
 
-From the mod root (`C:\dev\immersive-generals-expanded`):
+From the mod root (`mods\immersive-generals-expanded` under the Modding Manager):
 
 ```powershell
 # 1. Validate all Clausewitz files (.txt, .gfx, descriptor)
