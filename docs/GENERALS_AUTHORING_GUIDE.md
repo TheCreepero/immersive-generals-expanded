@@ -10,7 +10,6 @@ This guide details the architecture, historical balancing guidelines, portrait f
 immersive-generals-expanded/
 |-- common/
 |   |-- characters/                 # Character definition scripts (Clausewitz .txt, UTF-8 no BOM)
-|   |   |-- ige_characters_template.txt.example
 |   |   \-- ige_<TAG>_characters.txt
 |   \-- on_actions/                 # Zero-conflict startup recruitment hooks
 |       \-- ige_on_actions.txt
@@ -25,7 +24,8 @@ immersive-generals-expanded/
 |   \-- english/
 |       \-- ige_characters_l_english.yml        # Names & bios (UTF-8 with BOM)
 |-- docs/
-|   \-- GENERALS_AUTHORING_GUIDE.md # This guide
+|   |-- GENERALS_AUTHORING_GUIDE.md # This guide
+|   \-- ige_characters_template.txt.example # Character block template (not shipped)
 \-- tests/
     \-- Characters.Tests.ps1        # Automated Pester test suite
 ```
